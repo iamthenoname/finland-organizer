@@ -1,0 +1,1217 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Practices in Finland — Interactive Infographic (EDSC 121)</title>
+
+  <!-- Webfonts: PT Sans & PT Sans Narrow -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans+Narrow:wght@400;700&family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"PT Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+            heading: ['"PT Sans Narrow"', '"Arial Narrow"', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- GSAP Motion Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+      color: #002f6c;
+      font-family: "PT Sans", system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1,
+    h2,
+    h3,
+    .font-heading {
+      font-family: "PT Sans Narrow", "Arial Narrow", sans-serif;
+    }
+
+    /* Prevent heading wrapping or vertical overlap in cards and headers */
+    .masthead-title,
+    .selector-title,
+    .panel-title {
+      display: block;
+      margin: 0;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    /* Crisp Finnish Blue & White Quadrant Cards */
+    .quadrant-card {
+      border: 1.5px solid #002f6c;
+      background-color: #ffffff;
+    }
+
+    /* Left Column Selector Cards (40% Master List) */
+    .selector-card {
+      border: 1.5px solid #002f6c;
+      background-color: #ffffff;
+      color: #002f6c;
+      transition: background-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .selector-card:hover:not(.is-active) {
+      background-color: #f2f6fa;
+      box-shadow: 3px 3px 0px #002f6c;
+    }
+
+    .selector-card.is-active {
+      background-color: #002f6c;
+      color: #ffffff;
+      box-shadow: 4px 4px 0px #002f6c;
+    }
+
+    @media (min-width: 1024px) and (min-height: 700px) {
+      body.poster-shell {
+        height: 100vh;
+        overflow: hidden;
+      }
+    }
+
+    /* Modal Backdrop */
+    #detail-modal {
+      background-color: rgba(0, 47, 108, 0.45);
+    }
+
+    /* Custom Scrollbar for Modals */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f2f6fa;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #002f6c;
+    }
+  </style>
+</head>
+<body class="poster-shell bg-white text-[#002F6C] min-h-screen flex flex-col selection:bg-[#002F6C] selection:text-white">
+
+  <!-- ======================================================================= -->
+  <!-- FINNISH BLUE & WHITE POSTER MASTHEAD                                    -->
+  <!-- ======================================================================= -->
+  <header id="poster-masthead" class="w-full border-b-2 border-[#002F6C] bg-white shrink-0">
+    <div class="w-full max-w-[1680px] mx-auto px-3 sm:px-4 lg:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2.5">
+      <!-- Left: Course, Title & Authors -->
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+        <span class="px-2.5 py-1 bg-[#002F6C] text-white font-sans text-[11px] font-bold uppercase tracking-wide whitespace-nowrap shrink-0">
+          EDSC 121 THY · DR. NYMPHA B. JOAQUIN
+        </span>
+        <h1 class="masthead-title font-heading font-bold text-xl sm:text-2xl uppercase tracking-tight text-[#002F6C] shrink-0">
+          Math Practices in Finland
+        </h1>
+        <span class="hidden 2xl:inline-block font-sans text-sm text-[#002F6C]/80 whitespace-nowrap shrink-0">
+          J. K. Borondia · A. M. Melendres · R. Romero
+        </span>
+      </div>
+
+      <!-- Right: Bridge Matrix & APA Sources Triggers -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button
+          type="button"
+          id="open-matrix-btn"
+          class="px-3 py-1.5 border border-[#002F6C] bg-white text-[#002F6C] hover:bg-[#002F6C] hover:text-white font-sans text-xs font-bold uppercase whitespace-nowrap transition-colors cursor-pointer"
+        >
+          🇫🇮 ⇄ 🇵🇭 BRIDGE MATRIX
+        </button>
+        <button
+          type="button"
+          id="open-apa-btn"
+          class="px-3 py-1.5 border border-[#002F6C] bg-[#002F6C] text-white hover:bg-white hover:text-[#002F6C] font-sans text-xs font-bold uppercase whitespace-nowrap transition-colors cursor-pointer"
+        >
+          APA SOURCES [9]
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================================= -->
+  <!-- MAIN 40% / 60% MASTER-DETAIL INTERACTIVE INFOGRAPHIC CANVAS             -->
+  <!-- ======================================================================= -->
+  <main id="infographic-canvas" class="flex-1 w-full max-w-[1680px] mx-auto p-3 sm:p-4 lg:p-5 grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-4 lg:gap-5 min-h-0">
+
+    <!-- ===================================================================== -->
+    <!-- LEFT COLUMN (40%): VERTICAL LIST OF CARDS (HEADING & TAGLINE ONLY)    -->
+    <!-- ===================================================================== -->
+    <nav aria-label="Infographic Topics" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 lg:grid-rows-4 gap-3 min-h-0">
+
+      <!-- Card 01 Selector -->
+      <div
+        role="button"
+        tabindex="0"
+        data-topic="curriculum"
+        aria-pressed="true"
+        class="selector-card is-active text-left p-4 sm:p-5 flex items-center cursor-pointer min-h-0 select-none"
+      >
+        <div class="w-full flex flex-col gap-2">
+          <div class="flex items-center justify-between gap-2 w-full">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="topic-badge font-sans text-xs font-bold px-2 py-0.5 bg-white text-[#002F6C] shrink-0">01</span>
+              <h2 class="selector-title font-heading font-bold text-base sm:text-[17px] xl:text-[18px] uppercase tracking-tight">
+                Curriculum Design
+              </h2>
+            </div>
+            <span class="topic-arrow font-sans text-sm font-bold shrink-0">&rarr;</span>
+          </div>
+          <p class="topic-tagline m-0 text-sm sm:text-[14.5px] leading-snug opacity-95">
+            Finland pairs a uniform national core curriculum focused on mathematical thinking with local municipal adaptation and multidisciplinary modules.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 02 Selector -->
+      <div
+        role="button"
+        tabindex="0"
+        data-topic="pedagogy"
+        aria-pressed="false"
+        class="selector-card text-left p-4 sm:p-5 flex items-center cursor-pointer min-h-0 select-none"
+      >
+        <div class="w-full flex flex-col gap-2">
+          <div class="flex items-center justify-between gap-2 w-full">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="topic-badge font-sans text-xs font-bold px-2 py-0.5 bg-[#002F6C] text-white shrink-0">02</span>
+              <h2 class="selector-title font-heading font-bold text-base sm:text-[17px] xl:text-[18px] uppercase tracking-tight">
+                Teaching &amp; Learning Approaches
+              </h2>
+            </div>
+            <span class="topic-arrow font-sans text-sm font-bold shrink-0 opacity-40">&rarr;</span>
+          </div>
+          <p class="topic-tagline m-0 text-sm sm:text-[14.5px] leading-snug text-[#002F6C]/85">
+            Finnish teachers combine direct conceptual instruction, collaborative problem solving, and concrete manipulatives with a three-tiered support model instead of ability tracking.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 03 Selector -->
+      <div
+        role="button"
+        tabindex="0"
+        data-topic="assessment"
+        aria-pressed="false"
+        class="selector-card text-left p-4 sm:p-5 flex items-center cursor-pointer min-h-0 select-none"
+      >
+        <div class="w-full flex flex-col gap-2">
+          <div class="flex items-center justify-between gap-2 w-full">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="topic-badge font-sans text-xs font-bold px-2 py-0.5 bg-[#002F6C] text-white shrink-0">03</span>
+              <h2 class="selector-title font-heading font-bold text-base sm:text-[17px] xl:text-[18px] uppercase tracking-tight">
+                Trust-Based Assessment
+              </h2>
+            </div>
+            <span class="topic-arrow font-sans text-sm font-bold shrink-0 opacity-40">&rarr;</span>
+          </div>
+          <p class="topic-tagline m-0 text-sm sm:text-[14.5px] leading-snug text-[#002F6C]/85">
+            Finland omits compulsory standardized tests in basic education and relies on teacher-led diagnostic feedback, student self-assessment, and peer reflection.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 04 Selector -->
+      <div
+        role="button"
+        tabindex="0"
+        data-topic="culture"
+        aria-pressed="false"
+        class="selector-card text-left p-4 sm:p-5 flex items-center cursor-pointer min-h-0 select-none"
+      >
+        <div class="w-full flex flex-col gap-2">
+          <div class="flex items-center justify-between gap-2 w-full">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="topic-badge font-sans text-xs font-bold px-2 py-0.5 bg-[#002F6C] text-white shrink-0">04</span>
+              <h2 class="selector-title font-heading font-bold text-base sm:text-[17px] xl:text-[18px] uppercase tracking-tight">
+                Classroom Culture &amp; Environment
+              </h2>
+            </div>
+            <span class="topic-arrow font-sans text-sm font-bold shrink-0 opacity-40">&rarr;</span>
+          </div>
+          <p class="topic-tagline m-0 text-sm sm:text-[14.5px] leading-snug text-[#002F6C]/85">
+            Finnish schools schedule mandatory 15-minute breaks after every 45-minute lesson, assign minimal homework, and treat mistakes as a normal part of mathematical reasoning.
+          </p>
+        </div>
+      </div>
+
+    </nav>
+
+    <!-- ===================================================================== -->
+    <!-- RIGHT COLUMN (60%): FULL-HEIGHT ACTIVE DETAIL CARD                    -->
+    <!-- ===================================================================== -->
+    <section id="active-detail-stage" aria-live="polite" class="quadrant-card p-3.5 sm:p-4 flex flex-col justify-between h-full min-h-[480px] lg:min-h-0 shadow-[4px_4px_0px_#002F6C]">
+
+      <!-- =================================================================== -->
+      <!-- PANEL 01: CURRICULUM DESIGN                                         -->
+      <!-- =================================================================== -->
+      <div id="panel-curriculum" class="detail-panel flex flex-col justify-between h-full gap-2.5 sm:gap-3 min-h-0">
+        <!-- Compact Header -->
+        <div class="flex items-center justify-between gap-2 pb-1.5 border-b-[1.5px] border-[#002F6C] shrink-0">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="font-sans text-[11px] font-bold px-1.5 py-0.5 bg-[#002F6C] text-white shrink-0">01</span>
+            <h2 class="panel-title font-heading font-bold text-lg sm:text-xl xl:text-[21px] uppercase tracking-tight text-[#002F6C]">
+              Curriculum Design
+            </h2>
+          </div>
+          <button
+            type="button"
+            data-expand="curriculum"
+            class="expand-btn px-2.5 py-0.5 border border-[#002F6C] bg-white text-[#002F6C] hover:bg-[#002F6C] hover:text-white font-sans text-[11px] font-bold uppercase whitespace-nowrap shrink-0 transition-colors cursor-pointer"
+          >
+            FULL BREAKDOWN &nearr;
+          </button>
+        </div>
+
+        <!-- Top Horizontal OPH Core Curriculum Image + Middle Content Boxes -->
+        <div class="flex flex-col justify-between gap-2.5 flex-1 min-h-0">
+          <!-- Top: Full-Width Horizontal OPH Core Curriculum Image -->
+          <figure
+            id="oph-diagram-box"
+            class="w-full flex-1 min-h-[165px] border border-[#002F6C] bg-white p-2.5 flex flex-col justify-between cursor-pointer hover:bg-[#F2F6FA] transition-colors m-0"
+            title="Click to enlarge OPH Curriculum Diagram"
+          >
+            <div class="flex items-center justify-between gap-2 pb-1 border-b border-[#B8CCE4] shrink-0">
+              <span class="font-sans text-[11px] uppercase font-bold tracking-wide text-[#002F6C]">
+                FNBE / OPH NATIONAL CORE CURRICULUM MODEL
+              </span>
+              <span class="font-sans text-[11px] uppercase font-bold text-[#002F6C]/75 whitespace-nowrap">
+                CLICK TO ENLARGE &nearr;
+              </span>
+            </div>
+            <div class="relative w-full flex-1 min-h-[130px] my-1">
+              <img
+                src="https://i.ibb.co/355s1GY4/OPH-OPS-curriculum.jpg"
+                alt="Finnish National Core Curriculum conceptual diagram (OPH / FNBE)"
+                referrerpolicy="no-referrer"
+                onerror="this.onerror=null;this.src='https://placehold.co/640x260/ffffff/002f6c?text=OPH+Curriculum+Diagram';"
+                class="absolute inset-0 w-full h-full object-contain"
+              />
+            </div>
+          </figure>
+
+          <!-- Middle Row: National Core + PISA Between-School Variance -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 shrink-0">
+            <div class="bg-[#F2F6FA] border border-[#B8CCE4] p-2.5 text-xs sm:text-[13.5px] leading-snug text-[#002F6C] flex flex-col justify-center">
+              <strong class="block uppercase font-sans text-[11px] tracking-wide mb-0.5 text-[#002F6C]">National Core &amp; Local Steering (FNBE, 2016)</strong>
+              The framework anchors subjects and transversal competences in school culture, underlying values, and multidisciplinary learning modules that link mathematics to real-world inquiry (Krzywacki et al., 2016).
+            </div>
+
+            <!-- PISA 2018 Mathematics Between-School Variance (ICC) -->
+            <div class="border border-[#002F6C] p-2.5 bg-white flex flex-col justify-center text-[#002F6C]">
+              <div class="flex items-baseline justify-between gap-1.5 font-sans uppercase font-bold mb-1.5">
+                <span class="text-[11px] leading-tight">PISA 2018 MATH ICC (BETWEEN-SCHOOL)</span>
+                <span class="text-[10px] text-[#002F6C]/75 whitespace-nowrap shrink-0">YARDIM ET AL., 2024</span>
+              </div>
+              <div class="space-y-1.5 font-sans text-xs">
+                <!-- Finland: 0.14 (0.06) -> 28% / 12% on 0.50 scale -->
+                <div class="flex items-center gap-2">
+                  <span class="w-24 font-bold shrink-0">FINLAND</span>
+                  <div class="relative flex-1 h-2.5 border border-[#002F6C] bg-white" title="Unconditional ICC: 0.14 | Conditional ICC: 0.06">
+                    <div class="absolute inset-y-0 left-0 bg-[#9BB6D6]" style="width: 28%;"></div>
+                    <div class="absolute inset-y-0 left-0 bg-[#002F6C]" style="width: 12%;"></div>
+                  </div>
+                  <span class="w-20 text-right font-bold tabular-nums shrink-0">0.14 (0.06)</span>
+                </div>
+                <!-- Korea: 0.27 (0.15) -> 54% / 30% on 0.50 scale -->
+                <div class="flex items-center gap-2">
+                  <span class="w-24 font-bold text-[#002F6C]/85 shrink-0">KOREA</span>
+                  <div class="relative flex-1 h-2.5 border border-[#8FAAC9] bg-white" title="Unconditional ICC: 0.27 | Conditional ICC: 0.15">
+                    <div class="absolute inset-y-0 left-0 bg-[#9BB6D6]" style="width: 54%;"></div>
+                    <div class="absolute inset-y-0 left-0 bg-[#002F6C]" style="width: 30%;"></div>
+                  </div>
+                  <span class="w-20 text-right font-bold tabular-nums text-[#002F6C]/85 shrink-0">0.27 (0.15)</span>
+                </div>
+                <!-- Singapore: 0.29 (0.18) -> 58% / 36% on 0.50 scale -->
+                <div class="flex items-center gap-2">
+                  <span class="w-24 font-bold text-[#002F6C]/85 shrink-0">SINGAPORE</span>
+                  <div class="relative flex-1 h-2.5 border border-[#8FAAC9] bg-white" title="Unconditional ICC: 0.29 | Conditional ICC: 0.18">
+                    <div class="absolute inset-y-0 left-0 bg-[#9BB6D6]" style="width: 58%;"></div>
+                    <div class="absolute inset-y-0 left-0 bg-[#002F6C]" style="width: 36%;"></div>
+                  </div>
+                  <span class="w-20 text-right font-bold tabular-nums text-[#002F6C]/85 shrink-0">0.29 (0.18)</span>
+                </div>
+                <!-- Philippines: 0.45 (0.23) -> 90% / 46% on 0.50 scale -->
+                <div class="flex items-center gap-2">
+                  <span class="w-24 font-bold text-[#002F6C] shrink-0">PHILIPPINES</span>
+                  <div class="relative flex-1 h-2.5 border border-[#002F6C] bg-white" title="Unconditional ICC: 0.45 | Conditional ICC: 0.23">
+                    <div class="absolute inset-y-0 left-0 bg-[#9BB6D6]" style="width: 90%;"></div>
+                    <div class="absolute inset-y-0 left-0 bg-[#002F6C]" style="width: 46%;"></div>
+                  </div>
+                  <span class="w-20 text-right font-bold tabular-nums text-[#002F6C] shrink-0">0.45 (0.23)</span>
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center justify-between gap-2 mt-1.5 pt-1 border-t border-[#D6E3F0] font-sans text-[10px] text-[#002F6C]/80">
+                <span class="inline-flex items-center gap-1">
+                  <span class="inline-block w-2.5 h-2 bg-[#9BB6D6] border border-[#002F6C]/40"></span>
+                  Unconditional ICC
+                </span>
+                <span class="inline-flex items-center gap-1">
+                  <span class="inline-block w-2.5 h-2 bg-[#002F6C]"></span>
+                  Conditional ICC (in parentheses)
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Philippine Context Toggle Strip -->
+        <div class="pt-2 border-t-[1.5px] border-[#002F6C] space-y-1.5 shrink-0">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-sans text-xs sm:text-sm font-bold uppercase whitespace-nowrap text-[#002F6C]">
+              🇵🇭 PHILIPPINE CONTEXT
+            </span>
+            <div class="inline-flex border border-[#002F6C] shrink-0">
+              <button type="button" data-ph1="adapt" class="ph1-btn px-3 py-1 font-sans text-xs font-bold uppercase bg-[#002F6C] text-white whitespace-nowrap cursor-pointer">
+                ADAPTATION
+              </button>
+              <button type="button" data-ph1="challenge" class="ph1-btn px-3 py-1 font-sans text-xs font-bold uppercase bg-white text-[#002F6C] whitespace-nowrap cursor-pointer">
+                CHALLENGES
+              </button>
+            </div>
+          </div>
+          <p id="ph1-readout" class="m-0 text-sm sm:text-[14.5px] leading-snug text-[#002F6C] bg-[#F2F6FA] border border-[#B8CCE4] p-2.5">
+            This model complements the decongested MATATAG K to 10 Mathematics Curriculum (DepEd, 2023) through multidisciplinary performance tasks that link mathematics to science and local community data while planning assessment alongside content.
+          </p>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- PANEL 02: TEACHING & LEARNING APPROACHES                            -->
+      <!-- =================================================================== -->
+      <div id="panel-pedagogy" class="detail-panel hidden flex-col justify-between h-full gap-2.5 sm:gap-3 min-h-0">
+        <!-- Compact Header -->
+        <div class="flex items-center justify-between gap-2 pb-1.5 border-b-[1.5px] border-[#002F6C] shrink-0">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="font-sans text-[11px] font-bold px-1.5 py-0.5 bg-[#002F6C] text-white shrink-0">02</span>
+            <h2 class="panel-title font-heading font-bold text-lg sm:text-xl xl:text-[21px] uppercase tracking-tight text-[#002F6C]">
+              Teaching &amp; Learning Approaches
+            </h2>
+          </div>
+          <button
+            type="button"
+            data-expand="pedagogy"
+            class="expand-btn px-2.5 py-0.5 border border-[#002F6C] bg-white text-[#002F6C] hover:bg-[#002F6C] hover:text-white font-sans text-[11px] font-bold uppercase whitespace-nowrap shrink-0 transition-colors cursor-pointer"
+          >
+            FULL BREAKDOWN &nearr;
+          </button>
+        </div>
+
+        <!-- Middle Area: Horizontal Row (Static 3-Tier Diagram + Stacked Tier Descriptions) & Evidence Cards -->
+        <div class="flex flex-col justify-between gap-2.5 flex-1 min-h-0">
+          <!-- Horizontal Row: Diagram on Left, All 3 Tiers Stacked on Right -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-stretch flex-1 min-h-0">
+            <!-- Static 3-Tier Support Pyramid Diagram -->
+            <div class="md:col-span-5 flex flex-col items-center justify-center border border-[#002F6C] p-3 bg-white">
+              <span class="font-sans text-[11px] uppercase font-bold tracking-wide text-[#002F6C] mb-2 whitespace-nowrap">
+                THREE-TIERED SUPPORT MODEL
+              </span>
+              <svg id="pyramid-svg" class="w-full max-w-[260px] h-auto" viewBox="0 0 240 144" role="img" aria-label="Three-Tiered Support Pyramid: Tier 3 Special, Tier 2 Intensified, Tier 1 General Support">
+                <!-- Tier 3: Special Support -->
+                <polygon
+                  points="92,6 148,6 168,46 72,46"
+                  fill="#002F6C"
+                  stroke="#002F6C"
+                  stroke-width="1.5"
+                />
+                <text x="120" y="31" text-anchor="middle" fill="#FFFFFF" font-family="PT Sans, sans-serif" font-size="11.5" font-weight="700">
+                  T3: SPECIAL
+                </text>
+
+                <!-- Tier 2: Intensified Support -->
+                <polygon
+                  points="68,51 172,51 194,91 46,91"
+                  fill="#D9E5F4"
+                  stroke="#002F6C"
+                  stroke-width="1.5"
+                />
+                <text x="120" y="76" text-anchor="middle" fill="#002F6C" font-family="PT Sans, sans-serif" font-size="11.5" font-weight="700">
+                  T2: INTENSIFIED
+                </text>
+
+                <!-- Tier 1: General Support -->
+                <polygon
+                  points="42,96 198,96 222,138 18,138"
+                  fill="#FFFFFF"
+                  stroke="#002F6C"
+                  stroke-width="1.5"
+                />
+                <text x="120" y="122" text-anchor="middle" fill="#002F6C" font-family="PT Sans, sans-serif" font-size="11.5" font-weight="700">
+                  T1: GENERAL SUPPORT
+                </text>
+              </svg>
+            </div>
+
+            <!-- Stacked Three Tiers (All Visible Simultaneously) -->
+            <div class="md:col-span-7 flex flex-col justify-between gap-2 min-h-0">
+              <!-- Tier 3 -->
+              <div class="bg-[#F2F6FA] border border-[#002F6C] px-3 py-2 text-xs sm:text-[13px] leading-snug text-[#002F6C] flex-1 flex flex-col justify-center">
+                <strong class="uppercase font-sans text-[11px] tracking-wide block text-[#002F6C]">Tier 3 · Special Support</strong>
+                Students receive an individualized pedagogical plan (HOJKS) supported by special education co-teachers while remaining integrated with their peers (FNBE, 2016).
+              </div>
+
+              <!-- Tier 2 -->
+              <div class="bg-[#F2F6FA] border border-[#002F6C] px-3 py-2 text-xs sm:text-[13px] leading-snug text-[#002F6C] flex-1 flex flex-col justify-center">
+                <strong class="uppercase font-sans text-[11px] tracking-wide block text-[#002F6C]">Tier 2 · Intensified Support</strong>
+                Learners receive immediate, flexible small-group co-teaching and targeted scaffolding as soon as difficulties emerge (Bj&ouml;rn et al., 2016).
+              </div>
+
+              <!-- Tier 1 -->
+              <div class="bg-[#F2F6FA] border border-[#002F6C] px-3 py-2 text-xs sm:text-[13px] leading-snug text-[#002F6C] flex-1 flex flex-col justify-center">
+                <strong class="uppercase font-sans text-[11px] tracking-wide block text-[#002F6C]">Tier 1 · General Support</strong>
+                All students engage in conceptual explanation, collaborative problem solving, concrete manipulatives, and open-ended tasks from the early grades (Krzywacki et al., 2016; FNBE, 2016).
+              </div>
+            </div>
+          </div>
+
+          <!-- Research Evidence Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 font-sans text-xs sm:text-[13px] leading-snug text-[#002F6C] shrink-0">
+            <div class="border border-[#002F6C] p-2.5 bg-white">
+              <span class="font-bold text-[11px] uppercase tracking-wide block mb-0.5">OECD, 2019</span>
+              <span>Finnish students report lower math anxiety and stronger self-efficacy than OECD peers.</span>
+            </div>
+            <div class="border border-[#002F6C] p-2.5 bg-white">
+              <span class="font-bold text-[11px] uppercase tracking-wide block mb-0.5">BJ&Ouml;RN ET AL., 2016</span>
+              <span>Early RTI intervention supports learners without separating them into remedial tracks.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Philippine Context Toggle Strip -->
+        <div class="pt-2 border-t-[1.5px] border-[#002F6C] space-y-1.5 shrink-0">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-sans text-xs sm:text-sm font-bold uppercase whitespace-nowrap text-[#002F6C]">
+              🇵🇭 PHILIPPINE CONTEXT
+            </span>
+            <div class="inline-flex border border-[#002F6C] shrink-0">
+              <button type="button" data-ph2="adapt" class="ph2-btn px-3 py-1 font-sans text-xs font-bold uppercase bg-[#002F6C] text-white whitespace-nowrap cursor-pointer">
+                ADAPTATION
+              </button>
+              <button type="button" data-ph2="challenge" class="ph2-btn px-3 py-1 font-sans text-xs font-bold uppercase bg-white text-[#002F6C] whitespace-nowrap cursor-pointer">
+                CHALLENGES
+              </button>
+            </div>
+          </div>
+          <p id="ph2-readout" class="m-0 text-sm sm:text-[14.5px] leading-snug text-[#002F6C] bg-[#F2F6FA] border border-[#B8CCE4] p-2.5">
+            Philippine teachers can adapt this approach by using low-cost concrete manipulatives such as fraction strips, counters, and local measurement tools alongside structured peer-tutoring routines and early numeracy screening in Grades 1 to 3.
+          </p>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- PANEL 03: TRUST-BASED ASSESSMENT                                    -->
+      <!-- =================================================================== -->
+      <div id="panel-assessment" class="detail-panel hidden flex-col justify-between h-full gap-2.5 sm:gap-3 min-h-0">
+        <!-- Compact Header -->
+        <div class="flex items-center justify-between gap-2 pb-1.5 border-b-[1.5px] border-[#002F6C] shrink-0">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="font-sans text-[11px] font-bold px-1.5 py-0.5 bg-[#002F6C] text-white shrink-0">03</span>
+            <h2 class="panel-title font-heading font-bold text-lg sm:text-xl xl:text-[21px] uppercase tracking-tight text-[#002F6C]">
+              Trust-Based Assessment
+            </h2>
+          </div>
+          <button
+            type="button"
+            data-expand="assessment"
+            class="expand-btn px-2.5 py-0.5 border border-[#002F6C] bg-white text-[#002F6C] hover:bg-[#002F6C] hover:text-white font-sans text-[11px] font-bold uppercase whitespace-nowrap shrink-0 transition-colors cursor-pointer"
+          >
+            FULL BREAKDOWN &nearr;
+          </button>
+        </div>
+
+        <!-- Assessment FOR / AS / OF Side-by-Side + Key Metric & Evidence -->
+        <div class="flex flex-col justify-between gap-2.5 flex-1 min-h-0">
+          <!-- Simultaneous Triplet Cards: FOR, AS, OF -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 flex-1 min-h-0">
+            <!-- Assessment FOR -->
+            <div class="border border-[#002F6C] bg-[#F2F6FA] flex flex-col justify-between min-h-0">
+              <div class="bg-[#002F6C] text-white px-3 py-1.5 font-sans text-xs font-bold uppercase tracking-wide">
+                ASSESSMENT FOR
+              </div>
+              <p class="m-0 p-3 text-xs sm:text-[13.5px] leading-relaxed text-[#002F6C] flex-1 flex items-center">
+                Teachers provide ongoing diagnostic feedback, error analysis, classroom observation, and student conferences that prevent narrow teaching to the test (Sahlberg, 2021).
+              </p>
+            </div>
+
+            <!-- Assessment AS -->
+            <div class="border border-[#002F6C] bg-[#F2F6FA] flex flex-col justify-between min-h-0">
+              <div class="bg-[#002F6C] text-white px-3 py-1.5 font-sans text-xs font-bold uppercase tracking-wide">
+                ASSESSMENT AS
+              </div>
+              <p class="m-0 p-3 text-xs sm:text-[13.5px] leading-relaxed text-[#002F6C] flex-1 flex items-center">
+                Students practice self-assessment, goal-setting, and peer reflection to monitor and analyze their own mathematical reasoning (FNBE, 2016).
+              </p>
+            </div>
+
+            <!-- Assessment OF -->
+            <div class="border border-[#002F6C] bg-[#F2F6FA] flex flex-col justify-between min-h-0">
+              <div class="bg-[#002F6C] text-white px-3 py-1.5 font-sans text-xs font-bold uppercase tracking-wide">
+                ASSESSMENT OF
+              </div>
+              <p class="m-0 p-3 text-xs sm:text-[13.5px] leading-relaxed text-[#002F6C] flex-1 flex items-center">
+                Master's-educated teachers evaluate holistic portfolios and projects, leaving the optional Matriculation Exam at ages 18 to 19 as the sole national standardized test (OECD, 2019).
+              </p>
+            </div>
+          </div>
+
+          <!-- Key Metric & Empirical Evidence Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-stretch shrink-0">
+            <!-- Key Metric Box: 0 National Tests -->
+            <div class="sm:col-span-5 border border-[#002F6C] p-3 flex items-center gap-3 bg-white text-[#002F6C]">
+              <span id="zero-metric" class="font-heading text-4xl sm:text-5xl font-bold leading-none shrink-0">0</span>
+              <div class="min-w-0">
+                <span class="block font-sans text-[11px] uppercase font-bold leading-tight">
+                  COMPULSORY CENSUS TESTS IN BASIC ED
+                </span>
+                <span class="block font-sans text-[11px] text-[#002F6C]/80 mt-1 leading-tight">
+                  Only national exam is the optional Matriculation Exam (ages 18 to 19)
+                </span>
+              </div>
+            </div>
+
+            <!-- Empirical Evidence Box -->
+            <div class="sm:col-span-7 border border-[#002F6C] p-3 font-sans text-xs sm:text-[13px] bg-white text-[#002F6C] leading-snug flex flex-col justify-center">
+              <strong class="uppercase text-[11px] tracking-wide block mb-0.5">Empirical Evidence (Sahlberg, 2021; OECD, 2019)</strong>
+              Omitting compulsory standardized tests supports Master's-educated teacher autonomy, sample-based system monitoring, and equitable achievement across socioeconomic groups.
+            </div>
+          </div>
+        </div>
+
+        <!-- Philippine Context Toggle Strip -->
+        <div class="pt-2 border-t-[1.5px] border-[#002F6C] space-y-1.5 shrink-0">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-sans text-xs sm:text-sm font-bold uppercase whitespace-nowrap text-[#002F6C]">
+              🇵🇭 PHILIPPINE CONTEXT
+            </span>
+            <div class="inline-flex border border-[#002F6C] shrink-0">
+              <button type="button" data-ph3="adapt" class="ph3-btn px-3 py-1 font-sans text-xs font-bold uppercase bg-[#002F6C] text-white whitespace-nowrap cursor-pointer">
+                ADAPTATION
+              </button>
+              <button type="button" data-ph3="challenge" class="ph3-btn px-3 py-1 font-sans text-xs font-bold uppercase bg-white text-[#002F6C] whitespace-nowrap cursor-pointer">
+                CHALLENGES
+              </button>
+            </div>
+          </div>
+          <p id="ph3-readout" class="m-0 text-sm sm:text-[14.5px] leading-snug text-[#002F6C] bg-[#F2F6FA] border border-[#B8CCE4] p-2.5">
+            Finnish formative practices build directly on DepEd Order No. 8, s. 2015 by encouraging teachers to integrate error-analysis exit tickets, reflective math journals, and rubric-scored problem-solving portfolios into regular lessons.
+          </p>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- PANEL 04: CLASSROOM CULTURE & ENVIRONMENT                           -->
+      <!-- =================================================================== -->
+      <div id="panel-culture" class="detail-panel hidden flex-col justify-between h-full gap-2.5 sm:gap-3 min-h-0">
+        <!-- Compact Header -->
+        <div class="flex items-center justify-between gap-2 pb-1.5 border-b-[1.5px] border-[#002F6C] shrink-0">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="font-sans text-[11px] font-bold px-1.5 py-0.5 bg-[#002F6C] text-white shrink-0">04</span>
+            <h2 class="panel-title font-heading font-bold text-lg sm:text-xl xl:text-[21px] uppercase tracking-tight text-[#002F6C]">
+              Classroom Culture &amp; Environment
+            </h2>
+          </div>
+          <button
+            type="button"
+            data-expand="culture"
+            class="expand-btn px-2.5 py-0.5 border border-[#002F6C] bg-white text-[#002F6C] hover:bg-[#002F6C] hover:text-white font-sans text-[11px] font-bold uppercase whitespace-nowrap shrink-0 transition-colors cursor-pointer"
+          >
+            FULL BREAKDOWN &nearr;
+          </button>
+        </div>
+
+        <!-- Interactive SVG Radial Rhythm Clock Simulator + Quote + Evidence Cards -->
+        <div class="flex flex-col justify-between gap-2.5 flex-1 min-h-0">
+          <div class="flex flex-col sm:flex-row items-center gap-4 bg-[#F2F6FA] border border-[#B8CCE4] p-3 flex-1 min-h-0">
+            <!-- Finnish Blue Circular Gauge -->
+            <div class="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 flex items-center justify-center">
+              <svg class="w-full h-full -rotate-90" viewBox="0 0 80 80" aria-label="Lesson to Break Rhythm Gauge">
+                <circle cx="40" cy="40" r="32" fill="#FFFFFF" stroke="#002F6C" stroke-width="1.5" />
+                <circle cx="40" cy="40" r="26" fill="none" stroke="#D6E3F0" stroke-width="8" />
+                <circle
+                  id="rhythm-arc"
+                  cx="40"
+                  cy="40"
+                  r="26"
+                  fill="none"
+                  stroke="#002F6C"
+                  stroke-width="8"
+                  stroke-dasharray="163.36"
+                  stroke-dashoffset="40.84"
+                />
+              </svg>
+              <span id="rhythm-center-text" class="absolute font-sans text-sm sm:text-base font-bold text-[#002F6C]">
+                45/15
+              </span>
+            </div>
+
+            <!-- Rhythm Mode Switcher & Readout -->
+            <div class="flex-1 min-w-0 space-y-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" data-cycle="finland" class="cycle-btn px-3 py-1 border border-[#002F6C] font-sans text-xs sm:text-sm font-bold bg-[#002F6C] text-white whitespace-nowrap cursor-pointer">
+                  🇫🇮 45m / 15m Cycle
+                </button>
+                <button type="button" data-cycle="ph" class="cycle-btn px-3 py-1 border border-[#002F6C] font-sans text-xs sm:text-sm font-bold bg-white text-[#002F6C] hover:bg-[#F2F6FA] whitespace-nowrap cursor-pointer">
+                  🇵🇭 85m / 5m Adaptation
+                </button>
+              </div>
+              <p id="cycle-readout" class="m-0 text-xs sm:text-[14px] leading-snug text-[#002F6C]">
+                Finnish schools schedule a mandatory 15-minute recess after every 45-minute lesson to restore student attention and executive functioning (Pellegrini &amp; Bohn-Gettler, 2013), pairing lighter homework loads with higher PISA achievement yield per study hour (OECD, 2019).
+              </p>
+            </div>
+          </div>
+
+          <!-- Highlighted Quote Block -->
+          <blockquote class="m-0 border-l-4 border-[#002F6C] bg-white border-y border-r border-[#B8CCE4] px-3.5 py-2.5 text-xs sm:text-[13.5px] leading-snug text-[#002F6C] shrink-0">
+            &ldquo;The Finnish educational authorities conduct sample-based assessments, which are used as a basis for program improvements. They do not, however, endorse high-stakes, total cohort testing. Instead of external measures of accountability, the emphasis is on <strong class="font-bold">trust</strong>.&rdquo;
+          </blockquote>
+
+          <!-- Two Evidence Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 font-sans text-xs sm:text-[13px] leading-snug text-[#002F6C] shrink-0">
+            <div class="border border-[#002F6C] p-2.5 bg-white">
+              <span class="font-bold text-[11px] uppercase tracking-wide block mb-0.5">PSYCHOLOGICAL SAFETY (SAHLBERG, 2021)</span>
+              <span>Egalitarian teacher-student relationships treat mistakes as normal reasoning steps, reducing math anxiety.</span>
+            </div>
+            <div class="border border-[#002F6C] p-2.5 bg-white">
+              <span class="font-bold text-[11px] uppercase tracking-wide block mb-0.5">HIGH LEARNING EFFICIENCY (OECD, 2019)</span>
+              <span>Finnish students spend fewer hours in after-school homework and tutoring while achieving higher PISA efficiency.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Philippine Context Toggle Strip -->
+        <div class="pt-2 border-t-[1.5px] border-[#002F6C] space-y-1.5 shrink-0">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-sans text-xs sm:text-sm font-bold uppercase whitespace-nowrap text-[#002F6C]">
+              🇵🇭 PHILIPPINE CONTEXT
+            </span>
+            <div class="inline-flex border border-[#002F6C] shrink-0">
+              <button type="button" data-ph4="adapt" class="ph4-btn px-3 py-1 font-sans text-xs font-bold uppercase bg-[#002F6C] text-white whitespace-nowrap cursor-pointer">
+                ADAPTATION
+              </button>
+              <button type="button" data-ph4="challenge" class="ph4-btn px-3 py-1 font-sans text-xs font-bold uppercase bg-white text-[#002F6C] whitespace-nowrap cursor-pointer">
+                CHALLENGES
+              </button>
+            </div>
+          </div>
+          <p id="ph4-readout" class="m-0 text-sm sm:text-[14.5px] leading-snug text-[#002F6C] bg-[#F2F6FA] border border-[#B8CCE4] p-2.5">
+            Teachers can normalize productive struggle by comparing multiple student solution paths on the board, inserting brief brain breaks during long math blocks, and assigning short, purposeful homework sets.
+          </p>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ======================================================================= -->
+  <!-- DEEP-DIVE / MATRIX / APA SOURCES MODAL                                  -->
+  <!-- ======================================================================= -->
+  <div id="detail-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div id="modal-dialog" class="bg-white border-2 border-[#002F6C] w-full max-w-4xl max-h-[88vh] flex flex-col shadow-[6px_6px_0px_#002F6C]">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between gap-3 px-5 py-3 border-b-2 border-[#002F6C] bg-white shrink-0">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span id="modal-tag" class="px-2 py-0.5 bg-[#002F6C] text-white font-sans text-xs font-bold uppercase whitespace-nowrap shrink-0">
+            DEEP DIVE
+          </span>
+          <h3 id="modal-title" class="font-heading font-bold text-2xl sm:text-[26px] uppercase tracking-tight leading-tight truncate text-[#002F6C] m-0">
+            Modal Title
+          </h3>
+        </div>
+        <button
+          type="button"
+          id="close-modal-btn"
+          class="px-3 py-1 border border-[#002F6C] bg-white text-[#002F6C] hover:bg-[#002F6C] hover:text-white font-sans text-xs font-bold uppercase whitespace-nowrap shrink-0 transition-colors cursor-pointer"
+        >
+          CLOSE [ESC]
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div id="modal-body" class="p-5 overflow-y-auto space-y-4 text-sm sm:text-[15px] leading-relaxed text-[#002F6C]">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- INTERACTIVE INFOGRAPHIC LOGIC & GSAP MOTION CHOREOGRAPHY                -->
+  <!-- ======================================================================= -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // ---------------------------------------------------------------------
+      // 1. MASTER-DETAIL LEFT SELECTOR & RIGHT FULL-HEIGHT CARD SWITCHER
+      // ---------------------------------------------------------------------
+      const selectorCards = document.querySelectorAll(".selector-card");
+      const detailPanels = document.querySelectorAll(".detail-panel");
+      let activeTopic = "curriculum";
+
+      function setActiveTopic(topicKey) {
+        if (!topicKey || topicKey === activeTopic) return;
+        activeTopic = topicKey;
+
+        selectorCards.forEach((card) => {
+          const isMatch = card.getAttribute("data-topic") === topicKey;
+          const badge = card.querySelector(".topic-badge");
+          const arrow = card.querySelector(".topic-arrow");
+          const tagline = card.querySelector(".topic-tagline");
+
+          card.setAttribute("aria-pressed", isMatch ? "true" : "false");
+          if (isMatch) {
+            card.classList.add("is-active");
+            if (badge) {
+              badge.classList.remove("bg-[#002F6C]", "text-white");
+              badge.classList.add("bg-white", "text-[#002F6C]");
+            }
+            if (arrow) arrow.classList.remove("opacity-40");
+            if (tagline) {
+              tagline.classList.remove("text-[#002F6C]/85");
+              tagline.classList.add("opacity-95");
+            }
+          } else {
+            card.classList.remove("is-active");
+            if (badge) {
+              badge.classList.remove("bg-white", "text-[#002F6C]");
+              badge.classList.add("bg-[#002F6C]", "text-white");
+            }
+            if (arrow) arrow.classList.add("opacity-40");
+            if (tagline) {
+              tagline.classList.remove("opacity-95");
+              tagline.classList.add("text-[#002F6C]/85");
+            }
+          }
+        });
+
+        detailPanels.forEach((panel) => {
+          if (panel.id === `panel-${topicKey}`) {
+            panel.classList.remove("hidden");
+            panel.classList.add("flex");
+            if (typeof gsap !== "undefined") {
+              gsap.fromTo(
+                panel,
+                { opacity: 0, y: 10 },
+                { opacity: 1, y: 0, duration: 0.28, ease: "power2.out" }
+              );
+            }
+          } else {
+            panel.classList.add("hidden");
+            panel.classList.remove("flex");
+          }
+        });
+      }
+
+      selectorCards.forEach((card) => {
+        card.addEventListener("click", () => {
+          const topic = card.getAttribute("data-topic");
+          if (topic) setActiveTopic(topic);
+        });
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            const topic = card.getAttribute("data-topic");
+            if (topic) setActiveTopic(topic);
+          }
+        });
+      });
+
+      if (typeof gsap !== "undefined") {
+        gsap.from(".selector-card", {
+          x: -12,
+          opacity: 0,
+          duration: 0.35,
+          stagger: 0.06,
+          ease: "power2.out"
+        });
+        gsap.from("#active-detail-stage", {
+          opacity: 0,
+          y: 10,
+          duration: 0.38,
+          ease: "power2.out"
+        });
+      }
+
+      // ---------------------------------------------------------------------
+      // 2. REUSABLE PHILIPPINE CONTEXT (ADAPTATION / CHALLENGES) TOGGLE HELPER
+      // ---------------------------------------------------------------------
+      function bindContextToggle(btnSelector, attrName, readoutId, contentMap) {
+        const buttons = document.querySelectorAll(btnSelector);
+        const readout = document.getElementById(readoutId);
+        if (!buttons.length || !readout) return;
+
+        buttons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const mode = btn.getAttribute(attrName);
+            buttons.forEach((b) => {
+              b.classList.remove("bg-[#002F6C]", "text-white");
+              b.classList.add("bg-white", "text-[#002F6C]");
+            });
+            btn.classList.remove("bg-white", "text-[#002F6C]");
+            btn.classList.add("bg-[#002F6C]", "text-white");
+
+            if (contentMap[mode]) {
+              readout.textContent = contentMap[mode];
+              if (typeof gsap !== "undefined") {
+                gsap.fromTo(readout, { opacity: 0.45 }, { opacity: 1, duration: 0.22 });
+              }
+            }
+          });
+        });
+      }
+
+      bindContextToggle(".ph1-btn", "data-ph1", "ph1-readout", {
+        adapt:
+          "This model complements the decongested MATATAG K to 10 Mathematics Curriculum (DepEd, 2023) through multidisciplinary performance tasks that link mathematics to science and local community data while planning assessment alongside content.",
+        challenge:
+          "Centralized competency pacing, packed quarterly coverage, and uneven access to localized learning resources make school-level curriculum tailoring and cross-subject inquiry harder to sustain."
+      });
+
+      bindContextToggle(".ph2-btn", "data-ph2", "ph2-readout", {
+        adapt:
+          "Philippine teachers can adapt this approach by using low-cost concrete manipulatives such as fraction strips, counters, and local measurement tools alongside structured peer-tutoring routines and early numeracy screening in Grades 1 to 3.",
+        challenge:
+          "Severe shortages of special education co-teachers, limited instructional materials, and classes of 40 to 50 or more students make individualized tiered intervention difficult without structured peer-assisted learning."
+      });
+
+      bindContextToggle(".ph3-btn", "data-ph3", "ph3-readout", {
+        adapt:
+          "Finnish formative practices build directly on DepEd Order No. 8, s. 2015 by encouraging teachers to integrate error-analysis exit tickets, reflective math journals, and rubric-scored problem-solving portfolios into regular lessons.",
+        challenge:
+          "Grade-conscious expectations from parents and students, heavy administrative encoding, and standardized quarterly testing culture still incentivize numerical scores over descriptive feedback."
+      });
+
+      bindContextToggle(".ph4-btn", "data-ph4", "ph4-readout", {
+        adapt:
+          "Teachers can normalize productive struggle by comparing multiple student solution paths on the board, inserting brief brain breaks during long math blocks, and assigning short, purposeful homework sets.",
+        challenge:
+          "Double-shift schedules, classroom heat, limited open spaces, rigid bell schedules, and noisy home study environments constrain extended recess cycles and independent homework."
+      });
+
+      // ---------------------------------------------------------------------
+      // 3. PANEL 04: RADIAL LESSON-TO-BREAK RHYTHM SIMULATOR
+      // ---------------------------------------------------------------------
+      const cycleData = {
+        finland: {
+          center: "45/15",
+          offset: 40.84,
+          text:
+            "Finnish schools schedule a mandatory 15-minute recess after every 45-minute lesson to restore student attention and executive functioning (Pellegrini &amp; Bohn-Gettler, 2013), pairing lighter homework loads with higher PISA achievement yield per study hour (OECD, 2019)."
+        },
+        ph: {
+          center: "85/5",
+          offset: 9.08,
+          text:
+            "In Philippine double-period math blocks of 80 to 90 minutes, teachers can insert a brief three- to five-minute movement or cognitive reset break to sustain student attention despite rigid bell schedules and double-shift constraints."
+        }
+      };
+
+      const cycleButtons = document.querySelectorAll(".cycle-btn");
+      const rhythmArc = document.getElementById("rhythm-arc");
+      const rhythmCenterText = document.getElementById("rhythm-center-text");
+      const cycleReadout = document.getElementById("cycle-readout");
+
+      cycleButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const mode = btn.getAttribute("data-cycle");
+          cycleButtons.forEach((b) => {
+            b.classList.remove("bg-[#002F6C]", "text-white");
+            b.classList.add("bg-white", "text-[#002F6C]");
+          });
+          btn.classList.remove("bg-white", "text-[#002F6C]");
+          btn.classList.add("bg-[#002F6C]", "text-white");
+
+          const cfg = cycleData[mode];
+          if (cfg) {
+            if (rhythmCenterText) rhythmCenterText.textContent = cfg.center;
+            if (cycleReadout) cycleReadout.innerHTML = cfg.text;
+            if (rhythmArc) {
+              if (typeof gsap !== "undefined") {
+                gsap.to(rhythmArc, {
+                  attr: { "stroke-dashoffset": cfg.offset },
+                  duration: 0.45,
+                  ease: "power2.out"
+                });
+              } else {
+                rhythmArc.setAttribute("stroke-dashoffset", String(cfg.offset));
+              }
+            }
+          }
+        });
+      });
+
+      // ---------------------------------------------------------------------
+      // 4. EXPANDABLE FULL BREAKDOWN, BRIDGE MATRIX & APA MODALS
+      // ---------------------------------------------------------------------
+      const modalTemplates = {
+        curriculum: {
+          tag: "01 · CURRICULUM DESIGN",
+          title: "Curriculum Design: Finland vs. Philippines",
+          html: `
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+              <div class="md:col-span-5 space-y-3">
+                <div class="border border-[#002F6C] p-3 bg-white flex flex-col items-center">
+                  <img
+                    src="https://i.ibb.co/355s1GY4/OPH-OPS-curriculum.jpg"
+                    alt="Finnish National Core Curriculum conceptual diagram (OPH / FNBE)"
+                    referrerpolicy="no-referrer"
+                    onerror="this.onerror=null;this.src='https://placehold.co/360x325/ffffff/002f6c?text=OPH+Curriculum+Diagram';"
+                    class="w-full max-w-[320px] h-auto object-contain"
+                  />
+                  <span class="font-sans text-xs uppercase font-bold text-[#002F6C]/80 mt-2 text-center">
+                    Finnish National Agency for Education (OPH / FNBE, 2016)
+                  </span>
+                </div>
+                <div class="border border-[#002F6C] p-3 bg-white">
+                  <div class="font-sans text-xs font-bold uppercase border-b border-[#002F6C] pb-1 mb-2">
+                    PISA 2018 Math ICC (Yardim et al., 2024)
+                  </div>
+                  <table class="w-full text-left border-collapse font-sans text-xs">
+                    <thead>
+                      <tr class="bg-[#F2F6FA] border-b border-[#002F6C]">
+                        <th class="py-1 px-1.5">System</th>
+                        <th class="py-1 px-1.5 text-right">Unconditional</th>
+                        <th class="py-1 px-1.5 text-right">Conditional</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#D6E3F0]">
+                      <tr class="font-bold">
+                        <td class="py-1 px-1.5">Finland</td>
+                        <td class="py-1 px-1.5 text-right tabular-nums">0.14</td>
+                        <td class="py-1 px-1.5 text-right tabular-nums">0.06</td>
+                      </tr>
+                      <tr>
+                        <td class="py-1 px-1.5">Korea</td>
+                        <td class="py-1 px-1.5 text-right tabular-nums">0.27</td>
+                        <td class="py-1 px-1.5 text-right tabular-nums">0.15</td>
+                      </tr>
+                      <tr>
+                        <td class="py-1 px-1.5">Singapore</td>
+                        <td class="py-1 px-1.5 text-right tabular-nums">0.29</td>
+                        <td class="py-1 px-1.5 text-right tabular-nums">0.18</td>
+                      </tr>
+                      <tr class="font-bold bg-[#F2F6FA]">
+                        <td class="py-1 px-1.5">Philippines</td>
+                        <td class="py-1 px-1.5 text-right tabular-nums">0.45</td>
+                        <td class="py-1 px-1.5 text-right tabular-nums">0.23</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="md:col-span-7 space-y-3">
+                <div class="border border-[#002F6C] p-4 space-y-2.5">
+                  <h4 class="font-heading font-bold text-xl uppercase border-b border-[#002F6C] pb-1 m-0">🇫🇮 Finnish Core Practice &amp; Evidence</h4>
+                  <p class="m-0">Finland pairs a uniform national curriculum framework with municipal curriculum steering, transversal competences, and multidisciplinary learning modules that connect mathematics to real-world phenomena (FNBE, 2016). Rather than isolating procedural drills, Finnish curriculum design structures content around mathematical thinking and problem solving (Krzywacki et al., 2016).</p>
+                  <p class="m-0">Empirical multilevel analysis of PISA 2018 mathematics performance demonstrates Finland's exceptionally low between-school variance, with an unconditional intraclass correlation coefficient (ICC) of <strong>0.14</strong> and a socioeconomic-adjusted conditional ICC of <strong>0.06</strong>—substantially lower than Korea (<strong>0.27</strong> / <strong>0.15</strong>), Singapore (<strong>0.29</strong> / <strong>0.18</strong>), and the Philippines (<strong>0.45</strong> / <strong>0.23</strong>) (Yardim et al., 2024; OECD, 2019; Sahlberg, 2021).</p>
+                </div>
+                <div class="border border-[#002F6C] p-4 space-y-2.5 bg-[#F2F6FA]">
+                  <h4 class="font-heading font-bold text-xl uppercase border-b border-[#002F6C] pb-1 m-0">🇵🇭 Philippine Adaptation (MATATAG K to 10)</h4>
+                  <p class="m-0">This approach complements the decongested MATATAG K to 10 Mathematics Curriculum, which narrows learning competencies to strengthen foundational numeracy, critical thinking, and real-life application (DepEd, 2023).</p>
+                  <p class="m-0">Addressing the Philippines' high between-school variance (unconditional ICC = 0.45; conditional ICC = 0.23) requires pairing centralized equity benchmarks with localized, multidisciplinary performance tasks that connect mathematics to science and community data while planning formative assessment alongside instructional content.</p>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        pedagogy: {
+          tag: "02 · TEACHING & LEARNING",
+          title: "Pedagogy & Three-Tiered Support",
+          html: `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="border border-[#002F6C] p-4 space-y-2.5">
+                <h4 class="font-heading font-bold text-xl uppercase border-b border-[#002F6C] pb-1 m-0">🇫🇮 Finnish Core Practice &amp; Evidence</h4>
+                <p class="m-0">Finnish mathematics instruction balances direct conceptual explanation with collaborative problem solving, concrete manipulatives in early grades, and open-ended reasoning tasks (Krzywacki et al., 2016). Instead of sorting students into fixed ability tracks, schools provide immediate, non-stigmatizing help through General, Intensified, and Special Support tiers (FNBE, 2016).</p>
+                <p class="m-0">International survey evidence indicates that Finnish students report lower mathematics anxiety and stronger mathematical self-efficacy than OECD peers (OECD, 2019), while early Response-to-Intervention (RTI) scaffolding addresses learning gaps before they compound (Bj&ouml;rn et al., 2016).</p>
+              </div>
+              <div class="border border-[#002F6C] p-4 space-y-2.5 bg-[#F2F6FA]">
+                <h4 class="font-heading font-bold text-xl uppercase border-b border-[#002F6C] pb-1 m-0">🇵🇭 Philippine Adaptation &amp; Realities</h4>
+                <p class="m-0">Teachers can adapt these practices using low-cost concrete manipulatives such as fraction strips, counters, and local measurement tools, paired with structured peer-tutoring routines and early numeracy screening in Grades 1 to 3.</p>
+                <p class="m-0">Because severe shortages of special education co-teachers, limited instructional materials, and classes of 40 to 50 or more students constrain individualized pull-out support, structured peer-assisted learning within whole-class lessons offers a practical tiered scaffold.</p>
+              </div>
+            </div>
+          `
+        },
+        assessment: {
+          tag: "03 · ASSESSMENT",
+          title: "Trust-Based Formative Assessment",
+          html: `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="border border-[#002F6C] p-4 space-y-2.5">
+                <h4 class="font-heading font-bold text-xl uppercase border-b border-[#002F6C] pb-1 m-0">🇫🇮 Finnish Core Practice &amp; Evidence</h4>
+                <p class="m-0">Finland omits census-based high-stakes standardized tests throughout basic education, relying instead on teacher-led diagnostic feedback, student self-assessment, and peer reflection (FNBE, 2016; Sahlberg, 2021). Only sample-based national assessments are conducted to monitor system-wide equity, leaving the optional Matriculation Examination at ages 18 to 19 as the sole standardized exam.</p>
+                <p class="m-0">Research links this trust-based model to the prevention of narrow test preparation, stronger professional autonomy among Master's-educated teachers, and more equitable student achievement across socioeconomic backgrounds (Sahlberg, 2021; OECD, 2019).</p>
+              </div>
+              <div class="border border-[#002F6C] p-4 space-y-2.5 bg-[#F2F6FA]">
+                <h4 class="font-heading font-bold text-xl uppercase border-b border-[#002F6C] pb-1 m-0">🇵🇭 Philippine Adaptation (DepEd Order No. 8)</h4>
+                <p class="m-0">Finnish formative practices build directly on DepEd Order No. 8, s. 2015, which mandates formative assessment for and as learning alongside summative grading. Teachers can embed error-analysis exit tickets, reflective math journals, and rubric-scored problem-solving portfolios into regular lessons.</p>
+                <p class="m-0">Implementing diagnostic feedback remains challenging where grade-conscious expectations from families, heavy administrative encoding, and quarterly exam traditions still prioritize numerical scores over descriptive guidance.</p>
+              </div>
+            </div>
+          `
+        },
+        culture: {
+          tag: "04 · CLASSROOM CULTURE",
+          title: "Psychological Safety & Cognitive Rhythm",
+          html: `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="border border-[#002F6C] p-4 space-y-2.5">
+                <h4 class="font-heading font-bold text-xl uppercase border-b border-[#002F6C] pb-1 m-0">🇫🇮 Finnish Core Practice &amp; Evidence</h4>
+                <p class="m-0">Finnish classrooms cultivate egalitarian teacher-student relationships, psychological safety, minimal homework, and mandatory 15-minute breaks after every 45-minute lesson (Sahlberg, 2021). Mistakes are treated openly as normal steps in mathematical reasoning rather than personal failures.</p>
+                <p class="m-0">Developmental research demonstrates that frequent recess breaks restore sustained attention and executive functioning (Pellegrini &amp; Bohn-Gettler, 2013), while PISA findings show that Finnish students achieve higher learning efficiency per instructional hour despite spending fewer hours on homework and after-school tutoring (OECD, 2019).</p>
+              </div>
+              <div class="border border-[#002F6C] p-4 space-y-2.5 bg-[#F2F6FA]">
+                <h4 class="font-heading font-bold text-xl uppercase border-b border-[#002F6C] pb-1 m-0">🇵🇭 Philippine Adaptation &amp; Realities</h4>
+                <p class="m-0">Teachers can normalize productive struggle by comparing multiple student solution paths on the board, inserting three- to five-minute cognitive movement breaks during double-period math blocks, and assigning brief, purposeful homework sets.</p>
+                <p class="m-0">These routines must be adapted thoughtfully around double-shift school schedules, classroom heat, limited open campus space, rigid bell schedules, and noisy home study environments.</p>
+              </div>
+            </div>
+          `
+        },
+        matrix: {
+          tag: "SYNTHESIS MATRIX",
+          title: "🇫🇮 Finland ⇄ 🇵🇭 Philippines Bridge Matrix",
+          html: `
+            <div class="overflow-x-auto border border-[#002F6C]">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr class="bg-[#002F6C] text-white uppercase font-sans text-xs">
+                    <th class="p-3 border-r border-white">Dimension</th>
+                    <th class="p-3 border-r border-white">🇫🇮 Finland Model</th>
+                    <th class="p-3">🇵🇭 Philippine Adaptation &amp; Constraints</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#002F6C]">
+                  <tr>
+                    <td class="p-3 font-bold border-r border-[#002F6C] align-top">01 Curriculum</td>
+                    <td class="p-3 border-r border-[#002F6C] align-top">National equity core + municipal flexibility + multidisciplinary modules (FNBE, 2016).</td>
+                    <td class="p-3 align-top">Aligns with decongested MATATAG K to 10 (DepEd, 2023) via community-linked math performance tasks.</td>
+                  </tr>
+                  <tr class="bg-[#F2F6FA]">
+                    <td class="p-3 font-bold border-r border-[#002F6C] align-top">02 Pedagogy</td>
+                    <td class="p-3 border-r border-[#002F6C] align-top">Concrete manipulatives + 3-tier support (General, Intensified, Special) without tracking.</td>
+                    <td class="p-3 align-top">Low-cost manipulatives &amp; structured peer tutoring to navigate 40 to 50+ class sizes and SPED shortages.</td>
+                  </tr>
+                  <tr>
+                    <td class="p-3 font-bold border-r border-[#002F6C] align-top">03 Assessment</td>
+                    <td class="p-3 border-r border-[#002F6C] align-top">Zero compulsory basic-ed tests; diagnostic teacher feedback, self &amp; peer reflection.</td>
+                    <td class="p-3 align-top">Operationalizes DepEd Order No. 8, s. 2015 via error-analysis exit tickets &amp; math journals despite grade focus.</td>
+                  </tr>
+                  <tr class="bg-[#F2F6FA]">
+                    <td class="p-3 font-bold border-r border-[#002F6C] align-top">04 Culture</td>
+                    <td class="p-3 border-r border-[#002F6C] align-top">45m lesson / 15m recess cycle, minimal homework, psychological safety around mistakes.</td>
+                    <td class="p-3 align-top">3 to 5m brain breaks &amp; board comparisons of solution paths amid double shifts and limited space.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          `
+        },
+        apa: {
+          tag: "REFERENCES",
+          title: "EDSC 121 APA Reference Vault [9]",
+          html: `
+            <ol class="list-decimal pl-5 space-y-2.5 text-sm leading-relaxed m-0">
+              <li>Bj&ouml;rn, P. M., Aro, M. T., Koponen, T. K., Fuchs, L. S., &amp; Fuchs, D. H. (2016). The many faces of special education within RTI frameworks in the United States and Finland. <em>Learning Disability Quarterly</em>, 39(1), 58-66.</li>
+              <li>Department of Education. (2015). <em>Policy guidelines on classroom assessment for the K to 12 Basic Education Program</em> (DepEd Order No. 8, s. 2015).</li>
+              <li>Department of Education. (2023). <em>MATATAG curriculum: Mathematics Grades 1-10</em>.</li>
+              <li>Finnish National Board of Education. (2016). <em>National core curriculum for basic education 2014</em>.</li>
+              <li>Krzywacki, H., Pehkonen, L., &amp; Laine, A. (2016). Promoting mathematical thinking in Finnish mathematics education. In H. Niemi, A. Toom, &amp; A. Kallioniemi (Eds.), <em>Miracle of education: The principles and practices of teaching and learning in Finnish schools</em> (2nd rev. ed., pp. 109-123). Sense Publishers.</li>
+              <li>Organisation for Economic Co-operation and Development. (2019). <em>PISA 2018 results (Volume I): What students know and can do</em>. OECD Publishing.</li>
+              <li>Pellegrini, A. D., &amp; Bohn-Gettler, C. M. (2013). The benefits of recess in primary school. <em>Scholarpedia</em>, 8(2), 30448.</li>
+              <li>Sahlberg, P. (2021). <em>Finnish lessons 3.0: What can the world learn from educational change in Finland?</em> (3rd ed.). Teachers College Press.</li>
+              <li>Yardim, Y., C&uuml;vito&#287;lu, G., &amp; Aydin, B. (2024). <em>The intraclass correlation coefficient as a measure of educational inequality: An empirical study with data from PISA 2018</em> [Preprint]. Research Square. https://doi.org/10.21203/rs.3.rs-4066275/v1</li>
+            </ol>
+          `
+        }
+      };
+
+      const modal = document.getElementById("detail-modal");
+      const modalDialog = document.getElementById("modal-dialog");
+      const modalTag = document.getElementById("modal-tag");
+      const modalTitle = document.getElementById("modal-title");
+      const modalBody = document.getElementById("modal-body");
+      const closeModalBtn = document.getElementById("close-modal-btn");
+
+      function openModal(key) {
+        const tpl = modalTemplates[key];
+        if (!tpl || !modal) return;
+        if (modalTag) modalTag.textContent = tpl.tag;
+        if (modalTitle) modalTitle.textContent = tpl.title;
+        if (modalBody) modalBody.innerHTML = tpl.html;
+
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+
+        if (typeof gsap !== "undefined" && modalDialog) {
+          gsap.fromTo(
+            modalDialog,
+            { y: 14, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.25, ease: "power2.out" }
+          );
+        }
+      }
+
+      function closeModal() {
+        if (!modal) return;
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+
+      const currFigure = document.getElementById("oph-diagram-box");
+      if (currFigure) {
+        currFigure.addEventListener("click", () => openModal("curriculum"));
+      }
+
+      document.querySelectorAll(".expand-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const key = btn.getAttribute("data-expand");
+          if (key) openModal(key);
+        });
+      });
+
+      const openMatrixBtn = document.getElementById("open-matrix-btn");
+      if (openMatrixBtn) {
+        openMatrixBtn.addEventListener("click", () => openModal("matrix"));
+      }
+
+      const openApaBtn = document.getElementById("open-apa-btn");
+      if (openApaBtn) {
+        openApaBtn.addEventListener("click", () => openModal("apa"));
+      }
+
+      if (closeModalBtn) {
+        closeModalBtn.addEventListener("click", closeModal);
+      }
+
+      if (modal) {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) closeModal();
+        });
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal();
+      });
+    });
+  </script>
+</body>
+</html>
